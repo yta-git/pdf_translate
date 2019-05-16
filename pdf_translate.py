@@ -35,6 +35,7 @@ def google(ss):
             buffer += list(zip(origin, ret))
             
             if len(s) > 5000:
+                buffer += [(s, '\npassed.\n\n')]
                 print(s, '\npassed.\n\n')
             else:
                 query = s + '.\n'
@@ -85,6 +86,8 @@ if __name__ == '__main__':
         ws = list(set(text.split()))
         buffer = sorted(google(ws))
         for o, t in buffer:
+            o = o.replace('.', '')
+            t = t.replace('。', '').replace('.', '')
             if o.isalpha():
                 out.write(o + ' ' + t + '\n')
 
