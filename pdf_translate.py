@@ -27,16 +27,25 @@ def google(ss):
     buffer = []
 
     for s in ss:
-        query += (s + '\n')
         
-        if len(query) > 4800:
+        if len(query + s + '.\n') > 5000:
             origin = query.split('\n')
+            print(len(query), 'chars')
             ret = trans.translate(query, src=src, dest=dest).text.split('\n')
             buffer += list(zip(origin, ret))
-            query = ''
+            
+            if len(s) > 5000:
+                print(s, '\npassed.\n\n')
+            else:
+                query = s + '.\n'
+
+        else:
+            query += (s + '.\n')
+
 
     else:
         origin = query.split('\n')
+        print(len(query), 'chars')
         ret = trans.translate(query, src=src, dest=dest).text.split('\n')
         buffer += list(zip(origin, ret))
         query = ''
@@ -60,6 +69,8 @@ if __name__ == '__main__':
 
     text = rettxt.getvalue().replace('\n', '')
     ss =  re.split(r'\. ', text)
+    print(len(text.split()), 'words')
+    print(len(text), 'chars')
     print('reading completed')
     print('------------')
     print(f'translating sentences "{src}" to "{dest}"')
