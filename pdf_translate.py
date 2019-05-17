@@ -13,15 +13,11 @@ dest = 'ja'
 output = 'translate.txt'
 words = 'words.txt'
 
-rsrcmgr = PDFResourceManager()
-rettxt = StringIO()
-laparams = LAParams()
-trans = Translator()
-device = TextConverter(rsrcmgr, rettxt, codec='utf-8', laparams=laparams)
-
 def google(ss):
 
-    global src, dest, trans
+    global src, dest
+    trans = Translator()
+    
     bug_str = '𝑁'
     use_str = 'N'
 
@@ -74,6 +70,11 @@ def google(ss):
     return buffer
 
 if __name__ == '__main__':
+
+    rsrcmgr = PDFResourceManager()
+    rettxt = StringIO()
+    laparams = LAParams()
+    device = TextConverter(rsrcmgr, rettxt, codec='utf-8', laparams=laparams)
 
     print('output file:', output)
     print('words file:', words)
