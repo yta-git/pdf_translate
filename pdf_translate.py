@@ -88,8 +88,8 @@ if __name__ == '__main__':
             interpreter.process_page(page)
             cnt = cnt + 1
 
-    text = rettxt.getvalue().replace('\n', '')
-    ss =  re.split(r'\. ', text)
+    text = rettxt.getvalue().replace('-\n', '').replace('\n', ' ')
+    ss =  re.split(r'\.', text)
     print(len(text.split()), 'words')
     print(len(text), 'chars')
     print('reading completed')
