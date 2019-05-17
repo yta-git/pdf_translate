@@ -29,14 +29,24 @@ def google(ss):
     for s in ss:
         
         if len(query + s + '.\n') > 5000:
-            origin = query.split('\n')
             print(len(query), 'chars')
+            origin = query.split('\n')
+            print('###')
+            print(query)
             ret = trans.translate(query, src=src, dest=dest).text.split('\n')
-            buffer += list(zip(origin, ret))
+            try:
+            #    ret = trans.translate(query, src=src, dest=dest).text.split('\n')
+                buffer += list(zip(origin, ret))
+            except:
+                print('## error ##')
+                print(query)
+                print(len(query), 'chars')
+                print('###########')
             
-            if len(s) > 5000:
-                buffer += [(s, '\npassed.\n\n')]
+            if len(s + '.\n') > 5000:
+                buffer += [(s + '.', '\npassed.\n\n')]
                 print(s, '\npassed.\n\n')
+                query = ''
             else:
                 query = s + '.\n'
 
@@ -45,10 +55,17 @@ def google(ss):
 
 
     else:
-        origin = query.split('\n')
         print(len(query), 'chars')
-        ret = trans.translate(query, src=src, dest=dest).text.split('\n')
-        buffer += list(zip(origin, ret))
+        origin = query.split('\n')
+        try:
+            ret = trans.translate(query, src=src, dest=dest).text.split('\n')
+            buffer += list(zip(origin, ret))
+        except:
+            print('## error ##')
+            print(query)
+            print(len(query), 'chars')
+            print('###########')
+
         query = ''
         
     return buffer
