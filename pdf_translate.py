@@ -22,6 +22,8 @@ device = TextConverter(rsrcmgr, rettxt, codec='utf-8', laparams=laparams)
 def google(ss):
 
     global src, dest, trans
+    bug_str = '𝑁'
+    use_str = 'N'
 
     query = ''
     buffer = []
@@ -31,26 +33,26 @@ def google(ss):
         if len(query + s + '.\n') > 5000:
             print(len(query), 'chars')
             origin = query.split('\n')
-            print('###')
-            print(query)
-            ret = trans.translate(query, src=src, dest=dest).text.split('\n')
             try:
-            #    ret = trans.translate(query, src=src, dest=dest).text.split('\n')
+                ret = trans.translate(query, src=src, dest=dest).text.split('\n')
                 buffer += list(zip(origin, ret))
             except:
                 print('## error ##')
                 print(query)
                 print(len(query), 'chars')
                 print('###########')
+                exit(1)
             
             if len(s + '.\n') > 5000:
                 buffer += [(s + '.', '\npassed.\n\n')]
                 print(s, '\npassed.\n\n')
                 query = ''
             else:
+                s = s.translate(str.maketrans(bug_str, use_str))
                 query = s + '.\n'
 
         else:
+            s = s.translate(str.maketrans(bug_str, use_str))
             query += (s + '.\n')
 
 
@@ -65,6 +67,7 @@ def google(ss):
             print(query)
             print(len(query), 'chars')
             print('###########')
+            exit(1)
 
         query = ''
         
@@ -99,6 +102,7 @@ if __name__ == '__main__':
             out.write(o + '\n')
             out.write(t + '\n\n')
         
+
     with open(words, 'w') as out:
         ws = list(set(text.split()))
         buffer = sorted(google(ws))
