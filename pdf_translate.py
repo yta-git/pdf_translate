@@ -13,20 +13,24 @@ dest = 'ja'
 output = 'translate.txt'
 words = 'words.txt'
 
+bug_str = '𝑁'
+use_str = 'N'
+
+dot_term = ['et al.', 'etc.', 'e.g.', 'Fig.', 'i.e.', 'No.', 'pp.', 'Vol.']
+use_term = ['et al ', 'etc ', 'eg ', 'Fig-', 'ie ', 'No-', 'pp-', 'Vol-']
+
 def google(ss):
 
     global src, dest
+    global bug_str, use_str
     trans = Translator()
-    
-    bug_str = '𝑁'
-    use_str = 'N'
 
     query = ''
     buffer = []
 
     for s in ss:
         
-        if len(query + s + '.\n') > 5000:
+        if len(query + s + '\n') > 5000:
             print(len(query), 'chars')
             origin = query.split('\n')
             try:
@@ -39,17 +43,17 @@ def google(ss):
                 print('###########')
                 exit(1)
             
-            if len(s + '.\n') > 5000:
-                buffer += [(s + '.', '\npassed.\n\n')]
-                print(s, '\npassed.\n\n')
+            if len(s + '\n') > 5000:
+                buffer += [(s, 'passed.')]
+                print(s, '\npassed.')
                 query = ''
             else:
                 s = s.translate(str.maketrans(bug_str, use_str))
-                query = s + '.\n'
+                query = s + '\n'
 
         else:
             s = s.translate(str.maketrans(bug_str, use_str))
-            query += (s + '.\n')
+            query += (s + '\n')
 
 
     else:
@@ -90,7 +94,14 @@ if __name__ == '__main__':
             cnt = cnt + 1
 
     text = rettxt.getvalue().replace('-\n', '').replace('\n', ' ')
-    ss =  re.split(r'\.', text)
+    text = re.sub(r'\s+', ' ', text)
+    
+    for dot, use in zip(dot_term, use_term):
+        text = text.replace(dot, use)
+
+
+    ss = [s for s in re.split(r'(.+?[\.\!\?])\s', text) if s]
+    
     print(len(text.split()), 'words')
     print(len(text), 'chars')
     print('reading completed')
@@ -105,11 +116,9 @@ if __name__ == '__main__':
         
 
     with open(words, 'w') as out:
-        ws = list(set(text.split()))
+        ws = [w.replace('.', '') for w in set(text.split())]
         buffer = sorted(google(ws))
         for o, t in buffer:
-            o = o.replace('.', '')
-            t = t.replace('。', '').replace('.', '')
             if o.isalpha():
                 out.write(o + ' ' + t + '\n')
 
