@@ -5,4 +5,4 @@
 `pip install googletrans`
 
 # 実行
-`python pdf_translate.py ***.pdf`
+`python3 pdf_translate.py ***.pdf`
