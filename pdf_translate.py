@@ -1,11 +1,9 @@
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
-from pdfminer.pdfpage import PDFPage
+from sys import argv, stdout
 from io import StringIO
-
-from sys import argv
 import re
+
+import pdfminer.high_level
+from pdfminer.layout import LAParams
 from googletrans import Translator
 
 src = 'en'
@@ -55,7 +53,6 @@ def google(ss):
             s = s.translate(str.maketrans(bug_str, use_str))
             query += (s + '\n')
 
-
     else:
         print(len(query), 'chars')
         origin = query.split('\n')
@@ -75,36 +72,24 @@ def google(ss):
 
 if __name__ == '__main__':
 
-    rsrcmgr = PDFResourceManager()
-    rettxt = StringIO()
-    laparams = LAParams()
-    device = TextConverter(rsrcmgr, rettxt, codec='utf-8', laparams=laparams)
-
     print('output file:', output)
     print('words file:', words)
     print('------------')
-
+    print('reading pdf file')
+    
     with open(argv[1], 'rb') as fp:
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-
-        cnt = 1
-        for page in PDFPage.get_pages(fp, pagenos=None, maxpages=0, password=None, caching=True, check_extractable=True):
-            print('reading page', cnt)
-            interpreter.process_page(page)
-            cnt = cnt + 1
-
+        rettxt = StringIO()
+        pdfminer.high_level.extract_text_to_fp(fp, rettxt, laparams=LAParams())
+    
     text = rettxt.getvalue().replace('-\n', '').replace('\n', ' ')
     text = re.sub(r'\s+', ' ', text)
     
     for dot, use in zip(dot_term, use_term):
         text = text.replace(dot, use)
 
-
     ss = [s for s in re.split(r'(.+?[\.\!\?])\s', text) if s]
     
-    print(len(text.split()), 'words')
-    print(len(text), 'chars')
-    print('reading completed')
+    print(f'reading completed ({len(text.split())} words, {len(text)} chars)')
     print('------------')
     print(f'translating sentences "{src}" to "{dest}"')
 
@@ -113,16 +98,14 @@ if __name__ == '__main__':
         for o, t in buffer:
             out.write(o + '\n')
             out.write(t + '\n\n')
-        
 
     with open(words, 'w') as out:
-        ws = [w.replace('.', '') for w in set(text.split())]
+        ws = list({w.replace('.', '') for w in set(text.split())})
         buffer = sorted(google(ws))
         for o, t in buffer:
             if o.isalpha():
                 out.write(o + ' ' + t + '\n')
 
-    device.close()
     rettxt.close()
     print('------------')
     print('done')
