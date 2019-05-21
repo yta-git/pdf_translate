@@ -5,7 +5,11 @@
 `pip install googletrans`
 
 # 実行
-`python3 pdf_translate.py ***.pdf`
+- pdf 入力  
+    `python3 pdf_translate.py ***.pdf`  
+
+- txt 入力  
+    `python3 pdf_translate.py -t ***.txt`
 
 # 出力(デフォルト)
 

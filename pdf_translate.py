@@ -75,13 +75,20 @@ if __name__ == '__main__':
     print('output file:', output)
     print('words file:', words)
     print('------------')
-    print('reading pdf file')
     
-    with open(argv[1], 'rb') as fp:
-        rettxt = StringIO()
-        pdfminer.high_level.extract_text_to_fp(fp, rettxt, laparams=LAParams())
+    if argv[1] == '-t':
+        print('reading txt file')
+        with open(argv[2], 'rt') as fp:
+            text = fp.read()
+    else:
+        print('reading pdf file')
+        with open(argv[1], 'rb') as fp:
+            rettxt = StringIO()
+            pdfminer.high_level.extract_text_to_fp(fp, rettxt, laparams=LAParams())
+            text = rettxt.getvalue()
+            rettxt.close()
     
-    text = rettxt.getvalue().replace('-\n', '').replace('\n', ' ')
+    text = text.replace('-\n', '').replace('\n', ' ')
     text = re.sub(r'\s+', ' ', text)
     
     for dot, use in zip(dot_term, use_term):
@@ -109,6 +116,5 @@ if __name__ == '__main__':
             if o.isalpha():
                 out.write(o + ' ' + t + '\n')
 
-    rettxt.close()
     print('------------')
     print('done')
