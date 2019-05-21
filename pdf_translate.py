@@ -100,8 +100,11 @@ if __name__ == '__main__':
             out.write(t + '\n\n')
 
     with open(words, 'w') as out:
-        ws = list({w.replace('.', '') for w in set(text.split())})
-        buffer = sorted(google(ws))
+        ws = sorted({re.sub('[^A-Z^a-z]', '', w) for w in set(text.split())})
+        if '' in ws:
+            ws.remove('')
+
+        buffer = google(ws)
         for o, t in buffer:
             if o.isalpha():
                 out.write(o + ' ' + t + '\n')
